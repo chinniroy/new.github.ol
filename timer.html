@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Countdown Timer</title>
+    <style>
+        #timer {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="timer">10:00</div>
+<form id="quizForm" onsubmit="submitQuiz(); return false;">
+    <!-- Your quiz questions go here -->
+    <button type="submit">Submit Quiz</button>
+</form>
+
+<script>
+    let timeLeft = 600; // 10 minutes in seconds
+    const timerDisplay = document.getElementById('timer');
+
+    const countdown = setInterval(() => {
+        if (timeLeft <= 0) {
+            clearInterval(countdown);
+            submitQuiz();
+        } else {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')};`
+            timeLeft--;
+        }
+    }, 1000);
+
+    function submitQuiz() {
+        alert("Time's up! Submitting your quiz.");
+        document.getElementById('quizForm').submit();
+    }
+</script>
+
+</body>
+</html>

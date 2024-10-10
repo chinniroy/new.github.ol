@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+     <div id="quiz-container">
+        <div id="question"></div>
+        <div id="options"></div>
+        <button id="prev" onclick="prevQuestion()">Previous</button>
+        <button id="prev" onclick="nextQuestion()">Next</button>
+     </div> 
+
+
+ <script>
+const questions = [
+            { question: "What is the capital of France?", answers: ["Berlin", "Madrid", "Paris"], correct: 2 },
+            { question: "What is 2 + 2?", answers: ["3", "4", "5"], correct: 1 },
+            { question: "What is the largest planet in our solar system?", answers: ["Earth", "Jupiter", "Mars"], correct: 1 },
+            { question: "Who wrote 'Hamlet'?", answers: ["Charles Dickens", "Mark Twain", "William Shakespeare"], correct: 2 },
+        ];
+
+        let currentQuestionIndex = 0;
+
+        function displayQuestion() {
+            const questionElement = document.getElementById('question');
+            const optionsElement = document.getElementById('options');
+            const currentQuestion = questions[currentQuestionIndex];
+
+            questionElement.textContent = currentQuestion.question;
+            optionsElement.innerHTML = '';
+
+            currentQuestion.answers.forEach((answer, index) => {
+                const button = document.createElement('button');
+                button.textContent = answer;
+                button.onclick = () => selectAnswer(index);
+                optionsElement.appendChild(button);
+            });
+
+            document.getElementById('prev').style.display = currentQuestionIndex === 0 ? 'none' : 'inline';
+            document.getElementById('next').style.display = currentQuestionIndex === questions.length - 1 ? 'none' : 'inline';
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+
+        function selectAnswer(index) {
+            const currentQuestion = questions[currentQuestionIndex];
+            if (index === currentQuestion.correct) {
+                alert("Correct!");
+            } else {
+                alert("Incorrect. The correct answer was: " + currentQuestion.answers[currentQuestion.correct]);
+            }
+        }
+
+        displayQuestion();
+    </script>
+
+    
+</body>
+</html>
