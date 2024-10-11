@@ -1,0 +1,186 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+        h2{
+         text-align: center;
+         bottom: unset;
+         height: 30px;
+         width: 30px;
+        }
+        
+    </style>
+</head>
+<body>
+    <div id="auth">
+        <h2>Signup/Login</h2>
+        <input type="text" id="username" placeholder="Username" />
+        <button id="signup">Signup</button>
+        <button id="login">Login</button> 
+        <p id="authMessage"></p>
+    </div>
+
+    <div id="quiz" class="hidden">
+        <h2>Quiz</h2>
+        <div id="questionContainer"></div>
+        <button id="previousButton" class="hidden">PreviousQuestion</button>
+        <button id="nextButton" class="hidden">NextQuestion</button>
+        <button id="submitButton" class="hidden">Submit</button>
+        
+        
+        <p id="timer">Time Left: <span id="timeLeft">600</span> seconds</p>
+        <p id="scoreDisplay" class="hidden"></p>
+    </div>
+
+    <script>
+       const questions = [
+        { question: "What is the capital of Spain?", answers: ["Madrid", "Delhi", "Moscow"], correct: 0 },
+        { question: "What is the capital of France?", answers: ["Berlin", "Madrid", "Paris"], correct: 2 },
+        { question: "What is 2 + 2?", answers: ["3", "4", "5"], correct: 1 },
+        { question: "What is the largest planet in our solar system?", answers: ["Earth", "Jupiter", "Mars"], correct: 1 },
+        { question: "Who wrote 'Hamlet'?", answers: ["Charles Dickens", "Mark Twain", "William Shakespeare"], correct: 2 },
+    ];
+            
+        
+
+        let currentQuestionIndex = 0;
+        let timer;
+        let totalTime = 600; // 10 minutes in seconds
+        let score = 0;
+        const userAnswers = Array(questions.length).fill(null);
+
+        document.getElementById('signup').addEventListener('click', signup);
+        document.getElementById('login').addEventListener('click', login);
+        document.getElementById('nextButton').addEventListener('click', nextQuestion);
+        document.getElementById('previousButton').addEventListener('click', previousQuestion);
+        document.getElementById('submitButton').addEventListener('click', submit);
+
+        function signup() {
+            const username = document.getElementById('username').value;
+            if (username) {
+                localStorage.setItem('username', username);
+                displayQuiz();
+            } else {
+                showMessage("Please enter a username.");
+            }
+        }
+
+        function login() {
+            const username = document.getElementById('username').value;
+            if (localStorage.getItem('username') === username) {
+                displayQuiz();
+            } else {
+                showMessage("Username not found. Please signup.");
+            }
+        }
+
+        function displayQuiz() {
+            document.getElementById('auth').classList.add('hidden');
+            document.getElementById('quiz').classList.remove('hidden');
+            startTimer();
+            displayQuestion();
+        }
+
+        function startTimer() {
+            timer = setInterval(() => {
+                totalTime--;
+                document.getElementById('timeLeft').textContent = totalTime;
+                if (totalTime <= 0) {
+                    clearInterval(timer);
+                    alert("Time is up! Quiz submitted.");
+                    endQuiz();
+                }
+            }, 1000);
+        }
+
+        function displayQuestion() {
+        const questionContainer = document.getElementById("questionContainer");
+        const currentQuestion = questions[currentQuestionIndex];
+
+        questionContainer.innerHTML = `
+            <p>${currentQuestion.question}</p>
+            <form id="answersForm">
+                ${currentQuestion.answers.map((answer, index) => `
+                    <div>
+                        <input type="radio" id="answer${index}" name="answer" value="${index}" ${userAnswers[currentQuestionIndex] === index ? 'checked' : ''}>
+                        <label for="answer${index}">${answer}</label>
+                    </div>
+                `).join('')}
+            </form>
+        `;
+
+        document.getElementById("previousButton").classList.toggle("hidden", currentQuestionIndex === 0);
+        document.getElementById("nextButton").classList.toggle("hidden", currentQuestionIndex === questions.length - 1);
+        document.getElementById("submitButton").classList.toggle("hidden", currentQuestionIndex !== questions.length - 1);
+        document.getElementById("nextButton").classList.toggle("hidden", currentQuestionIndex === questions.length - 1);
+        }
+
+        function nextQuestion() {
+            const selectedAnswer = document.querySelector('input[name="answer"]:checked');
+            const answerIndex = parseInt(selectedAnswer.value);
+            userAnswers[currentQuestionIndex] = parseInt(selectedAnswer.value);
+            currentQuestionIndex++;
+           
+                displayQuestion();
+
+                
+           
+        }
+        function submit() {
+            const selectedAnswer = document.querySelector('input[name="answer"]:checked');
+            const answerIndex = parseInt(selectedAnswer.value);
+            userAnswers[currentQuestionIndex] = parseInt(selectedAnswer.value);
+
+
+            userAnswers.forEach((answer, index) => {
+            if (answer === questions[index].correct) {
+                score++;
+            }
+            });
+
+            endQuiz();
+
+    }
+
+    function endQuiz() {
+        document.getElementById("questionContainer").innerHTML = '';
+        document.getElementById("nextButton").classList.add("hidden");
+        document.getElementById("submitButton").classList.add("hidden");
+        document.getElementById("previousButton").classList.add("hidden");
+        document.getElementById("scoreDisplay").textContent =` Your score is: ${score} out of ${questions.length};`
+        document.getElementById("scoreDisplay").classList.remove("hidden");
+        document.getElementById("timer").classList.add("hidden");
+    }
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+
+        function selectAnswer(index) {
+            const Question = questions[QuestionIndex];
+            if (index === currentQuestion.correct) {
+                alert("Correct!");
+            } else {
+                alert("Incorrect. The correct answer was: " + currentQuestion.answers[currentQuestion.correct]);
+            }
+        }
+
+
+        function showMessage(message) {
+            document.getElementById('authMessage').textContent = message;
+        }
+    </script>
+</body>
+</html>
